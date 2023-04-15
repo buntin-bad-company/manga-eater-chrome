@@ -1,4 +1,4 @@
-import React, { useEffect, useState } from 'react';
+import React, { useState } from 'react';
 import './App.css';
 import Container from 'react-bootstrap/Container';
 import { Row, Col } from 'react-bootstrap';
@@ -101,21 +101,24 @@ const DomComp: React.FC = () => {
             token: discordToken,
         };
         console.log(body);
-        fetch('http://localhost:3000/api/manga', {
+        fetch('http://localhost:3000', {
             method: 'POST',
             headers: {
                 'Content-Type': 'application/json',
             },
             body: JSON.stringify(body),
         })
-            .then((response) => response.json())
-            .then((data) => {
-                console.log('Success:', data);
+            .then((response) => {
+                console.log('Success:', response);
                 setDom('Success');
+                setReady(false);
+                setLoading(false);
             })
             .catch((error) => {
                 console.error('Error:', error);
                 setDom('Error');
+                setReady(false);
+                setLoading(false);
             });
     };
     // JSX
