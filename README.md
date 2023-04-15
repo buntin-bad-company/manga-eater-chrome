@@ -20,3 +20,11 @@ in chorme, open `chrome://extensions/` and load unpacked extension
 ## License
 
 BUNTIN
+
+## 進捗
+
+アクティブなタブからクラス名を指定して html 要素を取得できた。
+
+## TODO
+
+-

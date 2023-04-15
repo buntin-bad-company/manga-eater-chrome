@@ -6,6 +6,11 @@ body {
         'Helvetica Neue', sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
+    /* padding about one char */
+    background-color: #282c34;
+    align-items: center;
+    color: white;
+    text-align: center;
 }
 
 code {

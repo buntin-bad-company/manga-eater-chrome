@@ -3,7 +3,7 @@
     "name": "Manga-Eater",
     "description": "無料読め、無料漫画 - あなたの方法を楽しませる.",
     "version": "1.0",
-    "permissions": ["activeTab,tabs", "scripting", "tabs"],
+    "permissions": ["activeTab", "tabs", "scripting", "tabs"],
     "action": {
         "default_popup": "index.html",
         "default_title": "Manga-Eater",
