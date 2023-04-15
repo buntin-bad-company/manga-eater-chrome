@@ -6,3 +6,17 @@ manga-eater-client for chrome
 
 this is client for manga-eater
 https://github.com/BuntinJP/manga-eater
+
+## dev
+
+```powershell
+yarn build build /build
+```
+
+## install
+
+in chorme, open `chrome://extensions/` and load unpacked extension
+
+## License
+
+BUNTIN
