@@ -10,7 +10,7 @@ https://github.com/BuntinJP/manga-eater
 ## dev
 
 ```powershell
-yarn build build /build
+yarn run build /build
 ```
 
 ## install
