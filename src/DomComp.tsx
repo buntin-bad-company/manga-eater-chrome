@@ -27,8 +27,7 @@ const createURLs = (formatted: string) => {
                 ary[i].includes('png') ||
                 ary[i].includes('jpeg') ||
                 ary[i].includes('webp') ||
-                ary[i].includes('gif') ||
-                ary[i].includes('bmp')
+                ary[i].includes('gif')
             ) {
                 urls.push(ary[i]);
             }
@@ -60,7 +59,6 @@ const getDomFromClassname = async (classname: string) => {
 };
 
 const DomComp: React.FC = () => {
-    //input state
     const [inputs, setInputs] = useState<string>('???');
     const [dom, setDom] = useState<string>('Out of Service');
     const [isLoading, setLoading] = useState(false);
@@ -69,7 +67,6 @@ const DomComp: React.FC = () => {
     const [ready, setReady] = useState<boolean>(false);
     const [urls, setUrls] = useState<string[]>([]);
     const [episode, setEpisode] = useState<string>('???');
-    // useEffect
     useEffect(() => {
         console.log('useEffect was called');
         chrome.storage.local.get(['classname'], (result) => {
