@@ -25,7 +25,10 @@ const createURLs = (formatted: string) => {
             if (
                 ary[i].includes('jpg') ||
                 ary[i].includes('png') ||
-                ary[i].includes('jpeg')
+                ary[i].includes('jpeg') ||
+                ary[i].includes('webp') ||
+                ary[i].includes('gif') ||
+                ary[i].includes('bmp')
             ) {
                 urls.push(ary[i]);
             }
