@@ -1,4 +1,4 @@
-import React, { useState } from 'react';
+import React, { useEffect, useState } from 'react';
 import './App.css';
 import Container from 'react-bootstrap/Container';
 import { Row, Col } from 'react-bootstrap';
@@ -10,11 +10,10 @@ import parserHtml from 'prettier/parser-html';
 interface RequestBody {
     title: string;
     urls: string[];
-    token: string;
 }
 
 const simulateNetworkRequest = () => {
-    return new Promise((resolve) => setTimeout(resolve, 2000));
+    return new Promise((resolve) => setTimeout(resolve, 500));
 };
 
 const createURLs = (formatted: string) => {
@@ -63,10 +62,34 @@ const DomComp: React.FC = () => {
     const [dom, setDom] = useState<string>('Out of Service');
     const [isLoading, setLoading] = useState(false);
     const [pages, setPages] = useState<string>('0');
-    const [title, setTitle] = useState<string>('Title');
+    const [title, setTitle] = useState<string>('???');
     const [ready, setReady] = useState<boolean>(false);
     const [urls, setUrls] = useState<string[]>([]);
-    const [discordToken, setDiscordToken] = useState<string>('');
+    const [episode, setEpisode] = useState<string>('???');
+    // useEffect
+    useEffect(() => {
+        console.log('useEffect was called');
+        chrome.storage.local.get(['classname'], (result) => {
+            if (result.classname) {
+                setInputs(result.classname);
+            }
+            console.log('classname is ' + result.classname);
+        });
+        chrome.storage.local.get(['title'], (result) => {
+            if (result.title) {
+                setTitle(result.title);
+            }
+            console.log('title is ' + result.title);
+        });
+        chrome.storage.local.get(['eposode'], (result) => {
+            if (result.eposode) {
+                const intEposode = parseInt(result.eposode);
+                const nextEposode = intEposode + 1;
+                setEpisode(nextEposode.toString());
+            }
+            console.log('eposode is ' + result.eposode);
+        });
+    }, []);
 
     const testviewButton = () => {
         setLoading(true);
@@ -75,6 +98,7 @@ const DomComp: React.FC = () => {
             if (dom.length === 0) {
                 setDom('not found');
                 setReady(false);
+                setLoading(false);
                 return;
             }
             const formatted = prettier.format(dom[0].innerHTML, {
@@ -93,12 +117,35 @@ const DomComp: React.FC = () => {
         });
     };
     const pushManga = () => {
+        chrome.storage.local.set(
+            {
+                classname: inputs,
+            },
+            () => {
+                console.log('classname is set to ' + inputs);
+            }
+        );
+        chrome.storage.local.set(
+            {
+                title: title,
+            },
+            () => {
+                console.log('title is set to ' + title);
+            }
+        );
+        chrome.storage.local.set(
+            {
+                eposode: episode,
+            },
+            () => {
+                console.log('eposode is set to ' + episode);
+            }
+        );
         setLoading(true);
         console.log('pushManga was called');
         const body: RequestBody = {
-            title: title,
+            title: title + episode,
             urls: urls,
-            token: discordToken,
         };
         console.log(body);
         fetch('http://localhost:3000', {
@@ -150,7 +197,7 @@ const DomComp: React.FC = () => {
                             <Form.Label>Title</Form.Label>
                             <Form.Control
                                 type=""
-                                placeholder={'Title'}
+                                placeholder={title}
                                 onChange={(e) => setTitle(e.target.value)}
                             />
                             <Form.Text className="text-muted">
@@ -162,17 +209,13 @@ const DomComp: React.FC = () => {
                             className="mb-3"
                             controlId="formBasicClassname"
                         >
-                            <Form.Label>DiscordApiToken</Form.Label>
+                            <Form.Label>Episodes</Form.Label>
                             <Form.Control
                                 type=""
-                                placeholder={'DiscordApiToken'}
-                                onChange={(e) =>
-                                    setDiscordToken(e.target.value)
-                                }
+                                placeholder={episode}
+                                onChange={(e) => setEpisode(e.target.value)}
                             />
-                            <Form.Text className="text-muted">
-                                DiscordAPIのトークン
-                            </Form.Text>
+                            <Form.Text className="text-muted">話数</Form.Text>
                         </Form.Group>
                         <Button
                             variant="dark"
