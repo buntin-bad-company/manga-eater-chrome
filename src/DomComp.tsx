@@ -67,6 +67,7 @@ const DomComp: React.FC = () => {
     const [ready, setReady] = useState<boolean>(false);
     const [urls, setUrls] = useState<string[]>([]);
     const [episode, setEpisode] = useState<string>('???');
+    const [channel, setChannel] = useState<string>('未取得');
     useEffect(() => {
         console.log('useEffect was called');
         chrome.storage.local.get(['classname'], (result) => {
@@ -88,6 +89,9 @@ const DomComp: React.FC = () => {
                 setEpisode(nextEposode.toString());
             }
             console.log('eposode is ' + result.eposode);
+        });
+        fetchChannelName().then((name) => {
+            setChannel(name);
         });
     }, []);
 
@@ -168,6 +172,11 @@ const DomComp: React.FC = () => {
                 setLoading(false);
             });
     };
+    const fetchChannelName = async () => {
+        const name = await fetch('http://localhost:3000/channel');
+        const t = await name.text();
+        return t;
+    };
     // JSX
     return (
         /* react boostrap split containers */
@@ -205,6 +214,7 @@ const DomComp: React.FC = () => {
                             </Form.Text>
                         </Form.Group>
                         {/*  */}
+                        {'  '}
                         <Form.Group
                             className="mb-3"
                             controlId="formBasicClassname"
@@ -239,15 +249,12 @@ const DomComp: React.FC = () => {
                 <Col>
                     <Container>
                         <div className="right-page">
-                            scraping status
-                            <br />
-                            Target Classname: {inputs}
-                            <br />
-                            Page: {pages}
-                            <br />
-                            Title: {title}
-                            <br />
-                            {dom}
+                            <h3>scraping status</h3>
+                            <h5>Target Classname: {inputs}</h5>
+                            <h5>Page: {pages}</h5>
+                            <h5>Title: {title}</h5>
+                            <h4>{dom}</h4>
+                            <h4>チャンネル名：{channel}</h4>
                         </div>
                     </Container>
                 </Col>

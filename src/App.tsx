@@ -22,22 +22,8 @@ const MainNav: React.FC<IMainNav> = ({ version }) => {
 };
 
 const App: React.FC = () => {
-    const [url, setUrl] = useState<string>('');
-    useEffect(() => {
-        const queryInfo = { active: true, lastFocusedWindow: true };
-        chrome.tabs &&
-            chrome.tabs.query(queryInfo, (tabs) => {
-                const url = tabs[0].url;
-                setUrl(url || 'unknown');
-            });
-    }, []);
-
     return (
         <div className="App">
-            <header className="App-header">
-                <p>URL:</p>
-                <p>{url}</p>
-            </header>
             <Container>
                 <MainNav version="0.0.1" />
                 <DomComp />
