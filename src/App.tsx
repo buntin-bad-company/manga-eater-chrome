@@ -24,7 +24,7 @@ const App: React.FC = () => {
     return (
         <div className="App">
             <Container>
-                <MainNav version="0.0.1" />
+                <MainNav version="1.0.0" />
                 <DomComp />
             </Container>
             <footer className="App-footer">
