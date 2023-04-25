@@ -4,8 +4,6 @@ import Container from 'react-bootstrap/Container';
 import { Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button } from 'react-bootstrap';
-import prettier from 'prettier/standalone';
-import parserHtml from 'prettier/parser-html';
 
 interface RequestBody {
     title: string;
@@ -13,138 +11,63 @@ interface RequestBody {
     url?: string;
 }
 
-const createURLs = (formatted: string) => {
-    const urls: string[] = [];
-    const lines = formatted.split('\n');
-    lines.forEach((line) => {
-        const ary = line.split('"');
-        for (let i = 0; i < ary.length; i++) {
-            if (
-                ary[i].includes('jpg') ||
-                ary[i].includes('png') ||
-                ary[i].includes('jpeg') ||
-                ary[i].includes('webp') ||
-                ary[i].includes('gif')
-            ) {
-                urls.push(ary[i]);
-            }
-        }
-    });
-    return urls;
-};
-
-function parseDOM() {
-    return document.body.innerHTML;
-}
-const getDomFromClassname = async (classname: string) => {
-    console.log('getDomFromClassname was called');
-    /* get active tab */
-    let [tab] = await chrome.tabs.query({ active: true, currentWindow: true });
-    /* execuse parseDOM in active tab and get dom */
-    let dom = await chrome.scripting.executeScript({
-        target: { tabId: tab.id || 0 },
-        func: parseDOM,
-    });
-    let domString = dom[0].result;
-    console.log(domString);
-    /* from string get a HTMLElement */
-    domString = '<html><body>' + domString + '</body></html>';
-    const parser = new DOMParser();
-    const doc = parser.parseFromString(domString, 'text/html');
-    const domElement = doc.getElementsByClassName(classname);
-    return domElement;
-};
-
 const DomComp: React.FC = () => {
-    const [inputs, setInputs] = useState<string>('???');
     const [dom, setDom] = useState<string>('Out of Service');
-    const [isLoading, setLoading] = useState(false);
-    const [pages, setPages] = useState<string>('0');
-    const [title, setTitle] = useState<string>('???');
-    const [ready, setReady] = useState<boolean>(false);
-    const [urls, setUrls] = useState<string[]>([]);
-    const [episode, setEpisode] = useState<string>('???');
-    const [channel, setChannel] = useState<string>('未取得');
+    const [isLoading, setLoading] = useState(false); //loading
+    const [title, setTitle] = useState<string>(''); //title of manga
+    const [ready, setReady] = useState<boolean>(true); //readiable of push button
+    const [pages, setPages] = useState<string>('?'); //ページ数
+    const [channel, setChannel] = useState<string>('未取得'); //discordチャンネル名
     useEffect(() => {
         console.log('useEffect was called');
-        chrome.storage.local.get(['classname'], (result) => {
-            if (result.classname) {
-                setInputs(result.classname);
-            }
-            console.log('classname is ' + result.classname);
-        });
-        chrome.storage.local.get(['title'], (result) => {
-            if (result.title) {
-                setTitle(result.title);
-            }
-            console.log('title is ' + result.title);
-        });
-        chrome.storage.local.get(['eposode'], (result) => {
-            if (result.eposode) {
-                const intEposode = parseInt(result.eposode);
-                const nextEposode = intEposode + 1;
-                setEpisode(nextEposode.toString());
-            }
-            console.log('eposode is ' + result.eposode);
-        });
         fetchChannelName().then((name) => {
             setChannel(name);
         });
-    }, []);
+    }, [title]);
 
-    const testviewButton = () => {
-        setLoading(true);
-        console.log('testviewButton was called');
-        getDomFromClassname(inputs).then((dom) => {
-            if (dom.length === 0) {
-                setDom('not found');
-                setReady(false);
-                setLoading(false);
-                return;
-            }
-            const formatted = prettier.format(dom[0].innerHTML, {
-                parser: 'html',
-                plugins: [parserHtml],
-            });
-            const urls = createURLs(formatted);
-            setDom('Loading...');
-            setReady(true);
-            setPages(urls.length.toString());
-            setUrls(urls);
-            setLoading(false);
-            setDom('URL is scraped.Push Ready');
+    const getInfoOfActiveTab = async () => {
+        console.log('getInfoOfActiveTab was called');
+        /* get active tab */
+        let [tab] = await chrome.tabs.query({
+            active: true,
+            currentWindow: true,
         });
+        /* execuse parseDOM in active tab and get dom */
+        let info = await chrome.scripting.executeScript({
+            target: { tabId: tab.id || 0 },
+            func: () => {
+                //get url
+                const url = document.URL;
+                const title = document.title;
+                const className = 'card-wrap';
+                const classCount = document.getElementsByClassName(className);
+                let urls = [];
+                for (let i = 0; i < classCount.length; i++) {
+                    const img = classCount[i].getElementsByTagName('img');
+                    const src = img[0].getAttribute('data-src') || '';
+                    urls.push(src);
+                }
+                const count: number = classCount.length;
+                return { title, count, url, urls };
+            },
+        });
+        const result = info[0].result;
+        return result;
     };
-    const pushManga = () => {
-        chrome.storage.local.set(
-            {
-                classname: inputs,
-            },
-            () => {
-                console.log('classname is set to ' + inputs);
-            }
-        );
-        chrome.storage.local.set(
-            {
-                title: title,
-            },
-            () => {
-                console.log('title is set to ' + title);
-            }
-        );
-        chrome.storage.local.set(
-            {
-                eposode: episode,
-            },
-            () => {
-                console.log('eposode is set to ' + episode);
-            }
-        );
+    const pushManga = async () => {
         setLoading(true);
         console.log('pushManga was called');
+        const result = await getInfoOfActiveTab();
+        const scrapedTitle = result.title
+            .replace(' – Raw 【第', '(')
+            .replace('話】', ')')
+            .replace(/ /g, '');
+        setTitle(scrapedTitle);
+        setPages(result.count.toString());
         const body: RequestBody = {
-            title: title + episode,
-            urls: urls,
+            title: scrapedTitle,
+            url: result.url,
+            urls: result.urls || undefined,
         };
         console.log(body);
         fetch('http://localhost:3000', {
@@ -155,15 +78,16 @@ const DomComp: React.FC = () => {
             body: JSON.stringify(body),
         })
             .then((response) => {
-                console.log('Success:', response);
+                const bodyString = response.body;
+                console.log('Success:', bodyString || 'no Signal');
                 setDom('Success');
-                setReady(false);
+                setReady(true);
                 setLoading(false);
             })
             .catch((error) => {
                 console.error('Error:', error);
                 setDom('Error');
-                setReady(false);
+                setReady(true);
                 setLoading(false);
             });
     };
@@ -174,26 +98,10 @@ const DomComp: React.FC = () => {
     };
     // JSX
     return (
-        /* react boostrap split containers */
         <Container fluid="true">
             <Row>
                 <Col>
                     <Form>
-                        <Form.Group
-                            className="mb-3"
-                            controlId="formBasicClassname"
-                        >
-                            <Form.Label>ClassName</Form.Label>
-                            <Form.Control
-                                type=""
-                                placeholder={inputs}
-                                onChange={(e) => setInputs(e.target.value)}
-                            />
-                            <Form.Text className="text-muted">
-                                漫画が入っているdivのクラス名
-                            </Form.Text>
-                        </Form.Group>
-                        {/*  */}
                         <Form.Group
                             className="mb-3"
                             controlId="formBasicClassname"
@@ -205,31 +113,9 @@ const DomComp: React.FC = () => {
                                 onChange={(e) => setTitle(e.target.value)}
                             />
                             <Form.Text className="text-muted">
-                                漫画のタイトル
+                                漫画のタイトル(未入力で自動取得)
                             </Form.Text>
                         </Form.Group>
-                        {/*  */}
-                        {'  '}
-                        <Form.Group
-                            className="mb-3"
-                            controlId="formBasicClassname"
-                        >
-                            <Form.Label>Episodes</Form.Label>
-                            <Form.Control
-                                type=""
-                                placeholder={episode}
-                                onChange={(e) => setEpisode(e.target.value)}
-                            />
-                            <Form.Text className="text-muted">話数</Form.Text>
-                        </Form.Group>
-                        <Button
-                            variant="dark"
-                            type="button"
-                            disabled={isLoading}
-                            onClick={!isLoading ? testviewButton : undefined}
-                        >
-                            {isLoading ? '待ってろ' : 'TestView'}
-                        </Button>
                         {'  '}
                         <Button
                             variant={ready ? 'danger' : 'dark'}
@@ -245,7 +131,6 @@ const DomComp: React.FC = () => {
                     <Container>
                         <div className="right-page">
                             <h3>scraping status</h3>
-                            <h5>Target Classname: {inputs}</h5>
                             <h5>Page: {pages}</h5>
                             <h5>Title: {title}</h5>
                             <h4>{dom}</h4>
