@@ -9,12 +9,9 @@ import parserHtml from 'prettier/parser-html';
 
 interface RequestBody {
     title: string;
-    urls: string[];
+    urls?: string[];
+    url?: string;
 }
-
-const simulateNetworkRequest = () => {
-    return new Promise((resolve) => setTimeout(resolve, 500));
-};
 
 const createURLs = (formatted: string) => {
     const urls: string[] = [];
@@ -114,10 +111,8 @@ const DomComp: React.FC = () => {
             setReady(true);
             setPages(urls.length.toString());
             setUrls(urls);
-            simulateNetworkRequest().then(() => {
-                setLoading(false);
-                setDom('URL is scraped.Push Ready');
-            });
+            setLoading(false);
+            setDom('URL is scraped.Push Ready');
         });
     };
     const pushManga = () => {

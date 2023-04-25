@@ -1,10 +1,10 @@
-import React, { useEffect, useState } from 'react';
+import React from 'react';
 import './App.css';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
 
-import DomComp from './DomComp';
+import DomComp2 from './DomComp2';
 
 interface IMainNav {
     version: string;
@@ -26,7 +26,7 @@ const App: React.FC = () => {
         <div className="App">
             <Container>
                 <MainNav version="0.0.1" />
-                <DomComp />
+                <DomComp2 />
             </Container>
             <footer className="App-footer">
                 {/* content about author */}
