@@ -1,34 +1,34 @@
 .App {
-    width: 600px;
-    height: 400px;
-    /* padding about one char */
-    background-color: #282c34;
-    align-items: center;
-    color: white;
-    text-align: center;
+  width: 800px; /*
+    height: 400px; */
+  /* padding about one char */
+  background-color: #282c34;
+  align-items: center;
+  color: white;
+  text-align: center;
 }
 
 .App-header {
-    /* padding about one char */
-    background-color: #282c34;
-    display: flex;
-    flex-direction: column;
-    align-items: center;
-    justify-content: center;
-    color: white;
+  /* padding about one char */
+  background-color: #282c34;
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  justify-content: center;
+  color: white;
 }
 .App-content {
-    /* height 100% */
-    font-size: calc(10px + 2vmin);
-    height: 100%;
-    margin: 0;
-    width: 100%;
-    height: 100%;
+  /* height 100% */
+  font-size: calc(10px + 2vmin);
+  height: 100%;
+  margin: 0;
+  width: 100%;
+  height: 100%;
 }
 
 .App-link {
-    color: #61dafb;
+  color: #61dafb;
 }
 .right-page {
-    margin-top: 10px;
+  margin-top: 10px;
 }
