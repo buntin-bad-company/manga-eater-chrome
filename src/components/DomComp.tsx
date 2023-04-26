@@ -6,10 +6,13 @@ import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button } from 'react-bootstrap';
 import ScraperStatus from './ScraperStatus';
 import ChannelCard from './ChannelCard';
+import ToggleButton from 'react-bootstrap/ToggleButton';
+
 interface RequestBody {
   title: string;
   urls?: string[];
   url?: string;
+  ifPush?: boolean;
 }
 
 const DomComp: React.FC = () => {
@@ -19,11 +22,12 @@ const DomComp: React.FC = () => {
   const [ready, setReady] = useState<boolean>(true); //readiable of push button
   const [pages, setPages] = useState<string>('?'); //ページ数
   const [body, setBody] = useState<RequestBody>({ title: '' }); //body of request
+  const [ifP, setIfP] = useState<boolean>(false); //if push
   useEffect(() => {
     console.log('useEffect was called');
     reLoad();
     // eslint-disable-next-line react-hooks/exhaustive-deps
-  }, []);
+  }, [ifP]);
 
   const reLoad = () => {
     console.log('reLoad was called');
@@ -73,12 +77,14 @@ const DomComp: React.FC = () => {
       title: scrapedTitle,
       url: result.url,
       urls: result.urls || undefined,
+      ifPush: ifP,
     };
     setBody(body);
     setLoading(false);
   };
   const pushManga = async () => {
     setLoading(true);
+    console.log(body);
     console.log('pushManga was called');
     const pushBody = body;
     console.log(pushBody);
@@ -117,6 +123,7 @@ const DomComp: React.FC = () => {
       title: scrapedTitle,
       url: result.url,
       urls: result.urls || undefined,
+      ifPush: ifP,
     };
     console.log(body);
     fetch('http://localhost:3000', {
@@ -182,6 +189,22 @@ const DomComp: React.FC = () => {
                 'Reload'
               )}
             </button>
+            <br />
+            <br />
+            <ToggleButton
+              className="mb-2"
+              id="toggle-check"
+              type="checkbox"
+              variant="outline-primary"
+              checked={ifP}
+              value="1"
+              onChange={(e) => {
+                console.log(`checked = ${e.currentTarget.checked}`);
+                setIfP(e.currentTarget.checked);
+              }}
+            >
+              {ifP ? 'Discordにポスト' : 'DLのみ'}
+            </ToggleButton>
           </Form>
         </Col>
         <Col>
@@ -190,6 +213,7 @@ const DomComp: React.FC = () => {
             pages={pages}
             title={title}
             status={status}
+            ifPost={ifP}
           />
         </Col>
       </Row>

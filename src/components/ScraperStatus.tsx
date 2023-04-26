@@ -6,6 +6,7 @@ interface State {
   pages: string;
   title: string;
   status: string;
+  ifPost: boolean;
 }
 
 const ScraperStatus: React.FC<State> = (props) => {
@@ -42,6 +43,10 @@ const ScraperStatus: React.FC<State> = (props) => {
               <tr>
                 <th scope="row">status</th>
                 <td>{props.status}</td>
+              </tr>
+              <tr>
+                <th scope="row">IfPush</th>
+                <td>{props.ifPost ? 'Push' : 'Only Download'}</td>
               </tr>
             </tbody>
           </table>
