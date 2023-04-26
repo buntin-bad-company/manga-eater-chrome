@@ -3,7 +3,7 @@ import './App.css';
 import Container from 'react-bootstrap/Container';
 import Navbar from 'react-bootstrap/Navbar';
 import 'bootstrap/dist/css/bootstrap.min.css';
-import DomComp from './DomComp';
+import DomComp from './components/DomComp';
 
 interface IMainNav {
   version: string;
