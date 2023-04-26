@@ -1,10 +1,11 @@
-import './App.css';
+import '../App.css';
 import React, { useEffect, useState } from 'react';
-import Container from 'react-bootstrap/Container';
+import { Container } from 'react-bootstrap';
 import { Row, Col } from 'react-bootstrap';
 import 'bootstrap/dist/css/bootstrap.min.css';
 import { Form, Button } from 'react-bootstrap';
 import ScraperStatus from './ScraperStatus';
+import ChannelCard from './ChannelCard';
 interface RequestBody {
   title: string;
   urls?: string[];
@@ -13,20 +14,21 @@ interface RequestBody {
 
 const DomComp: React.FC = () => {
   const [status, setStatus] = useState<string>('Out of Service');
-  const [isLoading, setLoading] = useState(false); //loading
+  const [isLoading, setLoading] = useState(false); //default is false
   const [title, setTitle] = useState<string>(''); //title of manga
   const [ready, setReady] = useState<boolean>(true); //readiable of push button
   const [pages, setPages] = useState<string>('?'); //ページ数
-  const [channel, setChannel] = useState<string>('未取得'); //discordチャンネル名
   const [body, setBody] = useState<RequestBody>({ title: '' }); //body of request
   useEffect(() => {
     console.log('useEffect was called');
-    fetchChannelName().then((name) => {
-      setChannel(name);
-    });
-    getReady();
+    reLoad();
     // eslint-disable-next-line react-hooks/exhaustive-deps
   }, []);
+
+  const reLoad = () => {
+    console.log('reLoad was called');
+    getReady();
+  };
 
   const getInfoOfActiveTab = async () => {
     console.log('getInfoOfActiveTab was called');
@@ -59,7 +61,7 @@ const DomComp: React.FC = () => {
   };
   const getReady = async () => {
     setLoading(true);
-    console.log('pushMangaForced was called');
+    console.log('getReady was called');
     const result = await getInfoOfActiveTab();
     const scrapedTitle = result.title
       .replace(' – Raw 【第', '(')
@@ -138,28 +140,16 @@ const DomComp: React.FC = () => {
         setLoading(false);
       });
   };
-  const fetchChannelName = async () => {
-    const name = await fetch('http://localhost:3000/channel');
-    const t = await name.text();
-    return t;
-  };
   // JSX
   return (
     <Container fluid="true">
       <Row>
         <Col>
+          <ChannelCard setLoading={setLoading} />
+          {/* some space */}
+          <br />
+          <br />
           <Form>
-            <Form.Group className="mb-3" controlId="formBasicClassname">
-              <Form.Label>Title</Form.Label>
-              <Form.Control
-                type=""
-                placeholder={title}
-                onChange={(e) => setTitle(e.target.value)}
-              />
-              <Form.Text className="text-muted">
-                漫画のタイトル(未入力で自動取得)
-              </Form.Text>
-            </Form.Group>
             <Button
               variant="primary"
               type="button"
@@ -177,6 +167,21 @@ const DomComp: React.FC = () => {
             >
               強制開始
             </Button>
+            {'  '}
+            <button className="btn btn-primary" type="button" onClick={reLoad}>
+              {isLoading ? (
+                <>
+                  <span
+                    className="spinner-border spinner-border-sm"
+                    role="status"
+                    aria-hidden="true"
+                  ></span>
+                  {'  '}Reload
+                </>
+              ) : (
+                'Reload'
+              )}
+            </button>
           </Form>
         </Col>
         <Col>
@@ -185,7 +190,6 @@ const DomComp: React.FC = () => {
             pages={pages}
             title={title}
             status={status}
-            channel={channel}
           />
         </Col>
       </Row>

@@ -6,7 +6,6 @@ interface State {
   pages: string;
   title: string;
   status: string;
-  channel: string;
 }
 
 const ScraperStatus: React.FC<State> = (props) => {
@@ -43,10 +42,6 @@ const ScraperStatus: React.FC<State> = (props) => {
               <tr>
                 <th scope="row">status</th>
                 <td>{props.status}</td>
-              </tr>
-              <tr>
-                <th scope="row">Channel</th>
-                <td>{props.channel}</td>
               </tr>
             </tbody>
           </table>
