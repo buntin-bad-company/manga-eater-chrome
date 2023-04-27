@@ -15,6 +15,16 @@ interface RequestBody {
   ifPush?: boolean;
 }
 
+const titleParser = (title: string) => {
+  const pushableTitle = title
+    //all - to ー
+    .replace('-', 'ー')
+    .replace(' – Raw 【第', '-')
+    .replace('話】', '')
+    .replace(/ /g, '');
+  return pushableTitle;
+};
+
 const DomComp: React.FC = () => {
   const [status, setStatus] = useState<string>('Out of Service');
   const [isLoading, setLoading] = useState(false); //default is false
@@ -67,12 +77,7 @@ const DomComp: React.FC = () => {
     setLoading(true);
     console.log('getReady was called');
     const result = await getInfoOfActiveTab();
-    const scrapedTitle = result.title
-      //all - to ー
-      .replace('-', 'ー')
-      .replace(' – Raw 【第', '-')
-      .replace('話】', '')
-      .replace(/ /g, '');
+    const scrapedTitle = titleParser(result.title);
     setTitle(scrapedTitle);
     setPages(result.count.toString());
     const body: RequestBody = {
@@ -115,10 +120,7 @@ const DomComp: React.FC = () => {
     setLoading(true);
     console.log('pushMangaForced was called');
     const result = await getInfoOfActiveTab();
-    const scrapedTitle = result.title
-      .replace(' – Raw 【第', '-')
-      .replace('話】', '')
-      .replace(/ /g, '');
+    const scrapedTitle = titleParser(result.title);
     setTitle(scrapedTitle);
     setPages(result.count.toString());
     const body: RequestBody = {
