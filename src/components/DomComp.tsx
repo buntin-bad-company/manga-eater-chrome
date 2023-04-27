@@ -68,8 +68,10 @@ const DomComp: React.FC = () => {
     console.log('getReady was called');
     const result = await getInfoOfActiveTab();
     const scrapedTitle = result.title
-      .replace(' – Raw 【第', '(')
-      .replace('話】', ')')
+      //all - to ー
+      .replace('-', 'ー')
+      .replace(' – Raw 【第', '-')
+      .replace('話】', '')
       .replace(/ /g, '');
     setTitle(scrapedTitle);
     setPages(result.count.toString());
@@ -114,8 +116,8 @@ const DomComp: React.FC = () => {
     console.log('pushMangaForced was called');
     const result = await getInfoOfActiveTab();
     const scrapedTitle = result.title
-      .replace(' – Raw 【第', '(')
-      .replace('話】', ')')
+      .replace(' – Raw 【第', '-')
+      .replace('話】', '')
       .replace(/ /g, '');
     setTitle(scrapedTitle);
     setPages(result.count.toString());
