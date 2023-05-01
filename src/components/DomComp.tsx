@@ -25,6 +25,8 @@ const titleParser = (title: string) => {
   return pushableTitle;
 };
 
+const url = 'https://manga.buntin.xyz';
+
 const DomComp: React.FC = () => {
   const [status, setStatus] = useState<string>('Out of Service');
   const [isLoading, setLoading] = useState(false); //default is false
@@ -95,7 +97,7 @@ const DomComp: React.FC = () => {
     console.log('pushManga was called');
     const pushBody = body;
     console.log(pushBody);
-    fetch('http://localhost:3000', {
+    fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
@@ -130,7 +132,7 @@ const DomComp: React.FC = () => {
       ifPush: ifP,
     };
     console.log(body);
-    fetch('http://localhost:3000', {
+    fetch(url, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',

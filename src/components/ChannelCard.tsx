@@ -10,8 +10,10 @@ interface Props {
   setLoading: React.Dispatch<React.SetStateAction<boolean>>;
 }
 
+const url = 'https://manga.buntin.xyz';
+
 const fetchChannelNames = async () => {
-  const name = await fetch('http://localhost:3000/channel');
+  const name = await fetch(`${url}/channel`);
   return await name.json();
 };
 
@@ -30,7 +32,7 @@ const ChannelCard: React.FC<Props> = (prop) => {
   const changeChannel = async (index: number) => {
     prop.setLoading(true);
     console.log(`changeChannel was called with ${index}`);
-    const res = await fetch('http://localhost:3000/channel', {
+    const res = await fetch(`${url}/channel`, {
       method: 'POST',
       headers: {
         'Content-Type': 'application/json',
